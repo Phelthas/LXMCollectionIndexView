@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'LXMCollectionIndexView_Example' do
+  pod 'LXMCollectionIndexView', :path => '../'
+
+  target 'LXMCollectionIndexView_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
