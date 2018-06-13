@@ -1,0 +1,6 @@
+framework module LXMCollectionIndexView {
+  umbrella header "LXMCollectionIndexView-umbrella.h"
+
+  export *
+  module * { export * }
+}

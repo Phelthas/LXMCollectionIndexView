@@ -1,0 +1,22 @@
+{
+  "name": "LXMCollectionIndexView",
+  "version": "0.1.0",
+  "summary": "A short description of LXMCollectionIndexView.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/billthas@gmail.com/LXMCollectionIndexView",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "billthas@gmail.com": "billthas@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/billthas@gmail.com/LXMCollectionIndexView.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "LXMCollectionIndexView/Classes/**/*"
+}
