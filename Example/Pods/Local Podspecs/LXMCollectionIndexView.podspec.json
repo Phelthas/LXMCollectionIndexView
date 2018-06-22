@@ -1,8 +1,8 @@
 {
   "name": "LXMCollectionIndexView",
-  "version": "0.1.0",
-  "summary": "A short description of LXMCollectionIndexView.",
-  "description": "TODO: Add long description of the pod here.",
+  "version": "0.0.1",
+  "summary": "Adding \"Index\" for UICollectionView, it looks just like the UITableView index",
+  "description": "给UICollectionView添加索引控件，看起来应该和UITablView一样，目前用法跟UITablView还不太一样，等等再优化",
   "homepage": "https://github.com/billthas@gmail.com/LXMCollectionIndexView",
   "license": {
     "type": "MIT",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/billthas@gmail.com/LXMCollectionIndexView.git",
-    "tag": "0.1.0"
+    "tag": "0.0.1"
   },
   "platforms": {
     "ios": "8.0"

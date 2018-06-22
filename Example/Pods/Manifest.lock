@@ -1,5 +1,5 @@
 PODS:
-  - LXMCollectionIndexView (0.1.0)
+  - LXMCollectionIndexView (0.0.1)
 
 DEPENDENCIES:
   - LXMCollectionIndexView (from `../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  LXMCollectionIndexView: 0d5925a42b15e535d27407c51a36d2c37fab836e
+  LXMCollectionIndexView: 876ac5e2ce6ac26b209b3e4900946f5a4aa69e77
 
-PODFILE CHECKSUM: 804894f741a8e25a7a89369049ea2a5bdf5cf19d
+PODFILE CHECKSUM: 34629e9a41691a203dd4b28cb9d66f9728871456
 
 COCOAPODS: 1.4.0
