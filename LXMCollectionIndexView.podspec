@@ -8,17 +8,11 @@
 
 Pod::Spec.new do |s|
   s.name             = 'LXMCollectionIndexView'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of LXMCollectionIndexView.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
+  s.version          = '0.0.1'
+  s.summary          = 'Adding "Index" for UICollectionView, it looks just like the UITableView index'
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+  给UICollectionView添加索引控件，看起来应该和UITablView一样，目前用法跟UITablView还不太一样，等等再优化
+
                        DESC
 
   s.homepage         = 'https://github.com/billthas@gmail.com/LXMCollectionIndexView'
