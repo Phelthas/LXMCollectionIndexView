@@ -21,6 +21,8 @@ class ViewController: UIViewController {
         didSet {
             if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                 layout.itemSize = CGSize(width: kScreenWidth, height: 44)
+                layout.minimumLineSpacing = 0
+                layout.minimumInteritemSpacing = 0
             }
             collectionView.delegate = self
             collectionView.dataSource = self
@@ -29,14 +31,20 @@ class ViewController: UIViewController {
         }
     }
     
-    fileprivate var indexArray = ["A", "B", "C", "D", "E", "F", "G"]
+    fileprivate var indexArray = ["A", "B", "C", "D", "E", "F", "G",
+                                  "H", "I", "J", "K", "L", "M", "N",
+                                  "O", "P", "Q", "R", "S", "T",
+                                  "U", "V", "W", "X", "Y", "Z", "#"]
     
+    
+    fileprivate var indexView: LXMCollectionIndexView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         let indexView = LXMCollectionIndexView(collectionView: collectionView)
         indexView.dataSource = indexArray
+        self.indexView = indexView
         self.view.addSubview(indexView)
     }
 
@@ -55,7 +63,7 @@ extension ViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return 25
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -70,6 +78,10 @@ extension ViewController: UICollectionViewDataSource {
 extension ViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if self.indexArray.count > 0 {
+            self.indexArray.removeLast()
+            self.indexView?.dataSource = self.indexArray
+        }
         
     }
 }

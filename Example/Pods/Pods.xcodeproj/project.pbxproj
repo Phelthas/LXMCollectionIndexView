@@ -14,7 +14,6 @@
 		43639AD320CE52BB00AFD8BE /* LXMCollectionIndexView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43639AD220CE52BB00AFD8BE /* LXMCollectionIndexView.swift */; };
 		661DFF63072DBD8BDC36547358C231A8 /* Pods-LXMCollectionIndexView_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = D45C794FF143ABDEE10116ADA92939FE /* Pods-LXMCollectionIndexView_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69AC45A86873EDD4571399E65A756582 /* Pods-LXMCollectionIndexView_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B63BDD6967F245FBA8DA222F6C062824 /* Pods-LXMCollectionIndexView_Example-dummy.m */; };
-		B01B52D9DC8ABD4EEC4704404A7D9ADA /* ReplaceMe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58DAA4C485A59DBC40BF4ED116F1F208 /* ReplaceMe.swift */; };
 		BB229C29D0F87A829C7B68781AE4165E /* LXMCollectionIndexView-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C7935A91DE8FBA8D5FC773389292CAF4 /* LXMCollectionIndexView-dummy.m */; };
 		D1A408C29A1E9D6B437E80F38682959C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
 		E1A0BC01C87F171C17232872B417421F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
@@ -45,7 +44,6 @@
 		34366BEBCAF39AFA00B8366AF170509E /* LXMCollectionIndexView.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; path = LXMCollectionIndexView.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		43639AD220CE52BB00AFD8BE /* LXMCollectionIndexView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LXMCollectionIndexView.swift; path = LXMCollectionIndexView/LXMCollectionIndexView.swift; sourceTree = "<group>"; };
 		4DA9FB035A6D03997F8372E7322DE9A1 /* LXMCollectionIndexView.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = LXMCollectionIndexView.modulemap; sourceTree = "<group>"; };
-		58DAA4C485A59DBC40BF4ED116F1F208 /* ReplaceMe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReplaceMe.swift; path = LXMCollectionIndexView/Classes/ReplaceMe.swift; sourceTree = "<group>"; };
 		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		722335C83B1978643FFA675DCA34A275 /* Pods-LXMCollectionIndexView_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-LXMCollectionIndexView_Tests-dummy.m"; sourceTree = "<group>"; };
 		89BC4917155609C84DA714D790C23EC3 /* Pods_LXMCollectionIndexView_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LXMCollectionIndexView_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,7 +187,6 @@
 		7E83A3871096C621A554D8E341CCD63D /* LXMCollectionIndexView */ = {
 			isa = PBXGroup;
 			children = (
-				58DAA4C485A59DBC40BF4ED116F1F208 /* ReplaceMe.swift */,
 				43639AD220CE52BB00AFD8BE /* LXMCollectionIndexView.swift */,
 				3034A51DF05219F8CEB807EABA1815BC /* Pod */,
 				141737DE3B16F68E6DCA6B576A8B84F4 /* Support Files */,
@@ -356,7 +353,6 @@
 			files = (
 				43639AD320CE52BB00AFD8BE /* LXMCollectionIndexView.swift in Sources */,
 				BB229C29D0F87A829C7B68781AE4165E /* LXMCollectionIndexView-dummy.m in Sources */,
-				B01B52D9DC8ABD4EEC4704404A7D9ADA /* ReplaceMe.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

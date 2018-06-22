@@ -10,7 +10,11 @@ import UIKit
 
 class TestCell: UICollectionViewCell {
 
-    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var titleLabel: UILabel! {
+        didSet {
+            titleLabel.backgroundColor = UIColor.orange
+        }
+    }
     
     
     override func awakeFromNib() {

@@ -8,33 +8,75 @@
 import UIKit
 
 private let kLXMCollectionIndexViewAnimationDuration: Double = 0.25
+private var kLXMCollectionIndexViewContent: CChar = 0
+private let kLXMCollectionIndexViewContentOffsetKeyPath = #keyPath(UICollectionView.contentOffset)
 
 open class LXMCollectionIndexView: UIView {
 
-    public var dataSource = [String]()
+    public var dataSource = [String]() {
+        didSet {
+            if dataSource != oldValue {
+                clearTextLayers()
+            }
+        }
+    }
+    
+    public var config: LXMCollectionIndexViewConfiguration {
+        didSet {
+            if config != oldValue {
+                clearTextLayers()
+            }
+        }
+    }
     
     fileprivate weak var collectionView: UICollectionView?
     
     fileprivate var textLayerArray = [LXMTextLayer]()
     
-    fileprivate lazy var displayLayer: CATextLayer = {
-        let displayLayer = CATextLayer()
-        displayLayer.bounds = CGRect(x: 0, y: 0, width: 60, height: 60)
-        displayLayer.backgroundColor = UIColor.lightGray.cgColor
-        displayLayer.fontSize = 30
-        displayLayer.alignmentMode = kCAAlignmentCenter
-        displayLayer.cornerRadius = 30
-        displayLayer.masksToBounds = true
-        displayLayer.opacity = 0
+    fileprivate lazy var indicator: UIView = {
+        let indicatorRadius = config.indicatorRadius
+        let indicator = UIView()
+        indicator.frame = CGRect(x: 0, y: 0, width: indicatorRadius * 3, height: indicatorRadius * 2)
+        indicator.backgroundColor = config.indicatorBackgroundColor
+        indicator.alpha = 0
+        indicator.addSubview(bigTextLabel)
         
-        return displayLayer
+        let maskLayer = CAShapeLayer()
+        maskLayer.frame = indicator.frame
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 2.414 * indicatorRadius, y: indicatorRadius))
+        path.addLine(to: CGPoint(x: 1.707 * indicatorRadius, y: 1.707 * indicatorRadius))
+        // 注意，这个画线的方法与数学中的坐标系不一样，0在3点钟方向，pi/2在6点钟方向，pi在9点钟方向。。。具体可以看文档
+        // 这里是以圆的0.25pi处和1.75pi处的切线的交点为箭头位置
+        path.addArc(withCenter: CGPoint(x: indicatorRadius, y: indicatorRadius), radius: indicatorRadius, startAngle: 0.25 * CGFloat.pi, endAngle: 1.75 * CGFloat.pi, clockwise: true)
+        path.close()
+        maskLayer.path = path.cgPath
+        maskLayer.fillColor = UIColor.red.cgColor
+        maskLayer.backgroundColor = UIColor.clear.cgColor
+        indicator.layer.mask = maskLayer
+        return indicator
     }()
     
+    /// CATextLayer的内容默认是上对齐的，不如用label方便
+    fileprivate lazy var bigTextLabel: UILabel = {
+        let indicatorRadius = config.indicatorRadius
+        let label = UILabel()
+        label.frame = CGRect(x: 0, y: 0, width: indicatorRadius * 2, height: indicatorRadius * 2)
+        label.backgroundColor = config.indicatorBackgroundColor
+        label.font = UIFont.systemFont(ofSize: ceil(indicatorRadius * 1.414))
+        label.textAlignment = .center
+        label.layer.cornerRadius = indicatorRadius
+        label.layer.masksToBounds = true
+        label.textColor = config.indicatorTextColor
+        return label
+    }()
     
-    
-    fileprivate var textLayerSpacing: CGFloat {
-        return floor(self.bounds.height - CGFloat(dataSource.count) * indexItemSize.height) / 2
+    fileprivate var layerTopSpacing: CGFloat {
+        let count = CGFloat(dataSource.count)
+        return floor(self.bounds.height - count * config.itemSize.height - config.itemSpacing * (count - 1)) / 2
     }
+    
+    fileprivate var isTouched: Bool = false
     
     fileprivate var touchedIndex: Int = 0 {
         didSet {
@@ -55,17 +97,21 @@ open class LXMCollectionIndexView: UIView {
         return _impactFeedbackGenerator as! UIImpactFeedbackGenerator
     }
     
-    fileprivate var indexItemSize: CGSize = CGSize(width: 15, height: 15)
-    
-    public init(collectionView: UICollectionView) {
+    public init(collectionView: UICollectionView, config: LXMCollectionIndexViewConfiguration = LXMCollectionIndexViewConfiguration()) {
         self.collectionView = collectionView
+        self.config = config
         super.init(frame: collectionView.frame)
         self.backgroundColor = UIColor.clear
-
+        collectionView.addObserver(self, forKeyPath: kLXMCollectionIndexViewContentOffsetKeyPath, options: .new, context: &kLXMCollectionIndexViewContent)
+        
     }
     
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        self.collectionView?.removeObserver(self, forKeyPath: kLXMCollectionIndexViewContentOffsetKeyPath)
     }
 }
 
@@ -83,38 +129,38 @@ private extension LXMCollectionIndexView {
             textLayer.alignmentMode = kCAAlignmentCenter
             textLayer.string = title
             textLayer.frame = frame(forTextLayer: textLayer)
-            textLayer.cornerRadius = indexItemSize.width / 2
+            textLayer.cornerRadius = config.itemSize.width / 2
             textLayer.masksToBounds = true
-            textLayer.backgroundColor = UIColor.lightGray.cgColor
             self.layer.addSublayer(textLayer)
             layerArray.append(textLayer)
         }
         textLayerArray = layerArray
+        updateTextLayers(forSelectedIndex: 0)
         
-        self.layer.addSublayer(displayLayer)
+        self.addSubview(indicator)
     }
     
     func frame(forTextLayer textLayer: LXMTextLayer) -> CGRect {
-        let width = indexItemSize.width
-        let height = indexItemSize.height
+        let width = config.itemSize.width
+        let height = config.itemSize.height
         return CGRect(x: self.bounds.width - width,
-                      y: textLayerSpacing + CGFloat(textLayer.index) * height,
+                      y: layerTopSpacing + CGFloat(textLayer.index) * height + config.itemSpacing * CGFloat(textLayer.index),
                       width: width,
                       height: height)
     }
     
-    func showDisplayLayer(forTextLayer textLayer: LXMTextLayer) {
+    func showIndicator(forTextLayer textLayer: LXMTextLayer) {
         //直接修改calayer属性是有默认的隐式动画的，可以用CATransaction关闭隐式动画
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        displayLayer.position = CGPoint(x: self.bounds.width - indexItemSize.width - 20 - 30, y: textLayer.position.y)
-        displayLayer.string = textLayer.string
-        displayLayer.opacity = 1
+        indicator.center = CGPoint(x: self.bounds.width - indicator.bounds.width / 2 - config.itemSize.width, y: textLayer.position.y)
+        bigTextLabel.text = textLayer.string as? String
+        indicator.alpha = 1
         CATransaction.commit()
     }
     
-    func hideDisplayLayer() {
-        displayLayer.opacity = 0
+    func hideIndicator() {
+        indicator.alpha = 0
     }
     
     func scrollCollectionView(toTextLayer textLayer: LXMTextLayer, animated: Bool) {
@@ -122,6 +168,25 @@ private extension LXMCollectionIndexView {
         collectionView?.scrollToItem(at: indexPath, at: .top, animated: animated)
     }
     
+    func updateTextLayers(forSelectedIndex index: Int) {
+        for textLayer in textLayerArray {
+            if textLayer.index == index {
+                textLayer.backgroundColor = config.itemSelectedBackgroundColor.cgColor
+                textLayer.foregroundColor = config.itemSelectedTextColor.cgColor
+            } else {
+                textLayer.backgroundColor = config.itemBackgroundColor.cgColor
+                textLayer.foregroundColor = config.itemTextColor.cgColor
+            }
+        }
+    }
+    
+    func clearTextLayers() {
+        if let sublayers = self.layer.sublayers {
+            for layer in sublayers {
+                layer.removeFromSuperlayer()
+            }
+        }
+    }
     
 }
 
@@ -142,7 +207,23 @@ extension LXMCollectionIndexView {
     }
     
     
-    
+    open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if let context = context, context == &kLXMCollectionIndexViewContent,
+            let keyPath = keyPath, keyPath == kLXMCollectionIndexViewContentOffsetKeyPath {
+            guard isTouched == false else { return }
+            if let indexPathArray = self.collectionView?.indexPathsForVisibleItems {
+                let minIndexPath = indexPathArray.min { (one, two) -> Bool in
+                    return one.section <= two.section
+                }
+                if let temp = minIndexPath?.section {
+                    updateTextLayers(forSelectedIndex: temp)
+                }
+            }
+            
+        } else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+    }
     
 }
 
@@ -154,7 +235,7 @@ extension LXMCollectionIndexView {
         let view = super.hitTest(point, with: event)
         
         if view == self {
-            let rect = CGRect(x: self.bounds.width - indexItemSize.width, y: textLayerSpacing, width: indexItemSize.width, height: self.bounds.height - textLayerSpacing * 2)
+            let rect = CGRect(x: self.bounds.width - config.itemSize.width, y: layerTopSpacing, width: config.itemSize.width, height: self.bounds.height - layerTopSpacing * 2)
             if rect.contains(point) {
                 return self
             } else {
@@ -166,22 +247,23 @@ extension LXMCollectionIndexView {
     }
     
     open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        isTouched = true
         showChanges(forTouches: touches)
     }
     
     open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        hideDisplayLayer()
+        hideIndicator()
+        isTouched = false
     }
     
     open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isTouched = true
         showChanges(forTouches: touches)
     }
     
     open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        hideDisplayLayer()
+        hideIndicator()
+        isTouched = false
     }
     
     func textLayer(forTouches touches: Set<UITouch>) -> LXMTextLayer? {
@@ -200,8 +282,9 @@ extension LXMCollectionIndexView {
     
     func showChanges(forTouches touches: Set<UITouch>) {
         guard let touchedLayer = textLayer(forTouches: touches) else { return }
+        updateTextLayers(forSelectedIndex: touchedLayer.index)
         touchedIndex = touchedLayer.index
-        showDisplayLayer(forTextLayer: touchedLayer)
+        showIndicator(forTextLayer: touchedLayer)
         scrollCollectionView(toTextLayer: touchedLayer, animated: false)
         
     }
@@ -213,7 +296,19 @@ extension LXMCollectionIndexView {
 
 
 
-class LXMTextLayer: CATextLayer {
+public class LXMTextLayer: CATextLayer {
     var index: Int = 0
 }
 
+public class LXMCollectionIndexViewConfiguration: NSObject {
+    var itemSize: CGSize = CGSize(width: 15, height: 15)
+    var itemSpacing: CGFloat = 0
+    var itemBackgroundColor: UIColor = UIColor.clear
+    var itemTextColor: UIColor = UIColor.darkText
+    var itemSelectedBackgroundColor: UIColor = UIColor.lightGray
+    var itemSelectedTextColor: UIColor = UIColor.white
+    var indicatorRadius: CGFloat = 30 //根据这个数值来绘制displayLayer，
+    var indicatorBackgroundColor: UIColor = UIColor.lightGray
+    var indicatorTextColor: UIColor = UIColor.white
+    
+}
