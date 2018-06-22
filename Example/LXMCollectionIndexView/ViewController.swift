@@ -9,7 +9,6 @@
 private let kScreenBounds: CGRect = UIScreen.main.bounds
 private let kScreenWidth: CGFloat = kScreenBounds.width
 private let kScreenHeight: CGFloat = kScreenBounds.height
-private let kTestCellIdentifier = "kTestCellIdentifier"
 
 import UIKit
 import LXMCollectionIndexView
@@ -23,11 +22,19 @@ class ViewController: UIViewController {
                 layout.itemSize = CGSize(width: kScreenWidth, height: 44)
                 layout.minimumLineSpacing = 0
                 layout.minimumInteritemSpacing = 0
+                layout.sectionHeadersPinToVisibleBounds = true
             }
             collectionView.delegate = self
             collectionView.dataSource = self
-            collectionView.register(UINib.init(nibName: "TestCell", bundle: nil), forCellWithReuseIdentifier: kTestCellIdentifier)
+            collectionView.register(UINib.init(nibName: TestCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: TestCell.reuseIdentifier)
+            collectionView.register(UINib.init(nibName: TestSectionHeaderView.reuseIdentifier, bundle: nil), forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: TestSectionHeaderView.reuseIdentifier)
             collectionView.backgroundColor = UIColor.orange
+            
+            if #available(iOS 11.0, *) {
+                collectionView.contentInsetAdjustmentBehavior = .never
+            } else {
+                // Fallback on earlier versions
+            }
         }
     }
     
@@ -67,10 +74,17 @@ extension ViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kTestCellIdentifier, for: indexPath) as! TestCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TestCell.reuseIdentifier, for: indexPath) as! TestCell
         cell.titleLabel.text = "\(indexArray[indexPath.section]) index:\(indexPath.section)-\(indexPath.item)"
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TestSectionHeaderView.reuseIdentifier, for: indexPath) as! TestSectionHeaderView
+        sectionHeader.titleLabel.text = indexArray[indexPath.section]
+        return sectionHeader
+    }
+    
 }
 
 
@@ -81,7 +95,15 @@ extension ViewController: UICollectionViewDelegate {
         if self.indexArray.count > 0 {
             self.indexArray.removeLast()
             self.indexView?.dataSource = self.indexArray
+            self.collectionView.reloadData()
         }
         
+    }
+
+}
+
+extension ViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: self.view.bounds.width, height: 30)
     }
 }

@@ -164,8 +164,19 @@ private extension LXMCollectionIndexView {
     }
     
     func scrollCollectionView(toTextLayer textLayer: LXMTextLayer, animated: Bool) {
+        guard let collectionView = collectionView else { return }
         let indexPath = IndexPath(item: 0, section: textLayer.index)
-        collectionView?.scrollToItem(at: indexPath, at: .top, animated: animated)
+        if let attributes = collectionView.layoutAttributesForSupplementaryElement(ofKind: UICollectionElementKindSectionHeader, at: indexPath),
+            let cellAttributes = collectionView.layoutAttributesForItem(at: indexPath) {
+            var targetPoint = cellAttributes.frame.origin
+            targetPoint.y = targetPoint.y - attributes.frame.size.height
+            // 用这种计算方法可以不考虑layout的sectionHeadersPinToVisibleBounds属性
+            // 如果直接用attributes的frame需要考虑sectionHeadersPinToVisibleBounds
+            collectionView.setContentOffset(targetPoint, animated: animated)
+        } else {
+            collectionView.scrollToItem(at: indexPath, at: .top, animated: animated)
+        }
+        
     }
     
     func updateTextLayers(forSelectedIndex index: Int) {
@@ -282,6 +293,7 @@ extension LXMCollectionIndexView {
     
     func showChanges(forTouches touches: Set<UITouch>) {
         guard let touchedLayer = textLayer(forTouches: touches) else { return }
+        if touchedIndex == touchedLayer.index { return }
         updateTextLayers(forSelectedIndex: touchedLayer.index)
         touchedIndex = touchedLayer.index
         showIndicator(forTextLayer: touchedLayer)

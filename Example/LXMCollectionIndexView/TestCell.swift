@@ -10,6 +10,8 @@ import UIKit
 
 class TestCell: UICollectionViewCell {
 
+    static let reuseIdentifier = "TestCell"
+    
     @IBOutlet weak var titleLabel: UILabel! {
         didSet {
             titleLabel.backgroundColor = UIColor.orange
